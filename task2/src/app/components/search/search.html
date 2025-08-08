@@ -1,0 +1,128 @@
+<div class="container mt-4">
+  <!-- Loading State -->
+  <div class="row" *ngIf="isLoading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-muted">Loading movies...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading">
+    <!-- Search Header -->
+    <div class="row mb-4">
+      <div class="col-12 text-center">
+        <h1 class="display-6">Search Movies</h1>
+        <p class="text-muted">Find your favorite movies and TV shows</p>
+      </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-4">
+      <div class="col-md-8 mx-auto">
+        <div class="input-group input-group-lg position-relative">
+          <span class="input-group-text">
+            <i class="fas fa-search"></i>
+          </span>
+          <input type="text" 
+                 class="form-control" 
+                 placeholder="Search for movies, actors, or directors..."
+                 [(ngModel)]="searchTerm"
+                 (input)="onSearchInput()"
+                 (keyup.enter)="performSearch()">
+          <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()" *ngIf="searchTerm">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <!-- Loading indicator -->
+        <div class="text-center mt-2" *ngIf="isSearching">
+          <div class="spinner-border spinner-border-sm text-primary" role="status">
+            <span class="visually-hidden">Searching...</span>
+          </div>
+          <small class="text-muted ms-2">Searching...</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Filters -->
+    <div class="row mb-4">
+      <div class="col-md-8 mx-auto">
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+          <button class="btn btn-outline-secondary btn-sm" 
+                  [class.active]="selectedGenre === 'all'"
+                  (click)="filterByGenre('all')">
+            All Genres
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" 
+                  [class.active]="selectedGenre === 'drama'"
+                  (click)="filterByGenre('drama')">
+            Drama
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" 
+                  [class.active]="selectedGenre === 'action'"
+                  (click)="filterByGenre('action')">
+            Action
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" 
+                  [class.active]="selectedGenre === 'comedy'"
+                  (click)="filterByGenre('comedy')">
+            Comedy
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" 
+                  [class.active]="selectedGenre === 'crime'"
+                  (click)="filterByGenre('crime')">
+            Crime
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="row" *ngIf="searchResults.length > 0 && (hasSearched || searchTerm)">
+      <div class="col-12">
+        <h3 class="mb-3">
+          <i class="fas fa-search me-2"></i>
+          Search Results ({{ searchResults.length }} found)
+        </h3>
+      </div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="searchResults.length > 0">
+      <div class="col" *ngFor="let movie of searchResults">
+        <app-movie-card [movie]="movie"></app-movie-card>
+      </div>
+    </div>
+
+    <!-- No Results -->
+    <div class="row mt-5" *ngIf="hasSearched && searchResults.length === 0 && !isSearching">
+      <div class="col-12 text-center">
+        <div class="alert alert-info">
+          <i class="fas fa-search me-2"></i>
+          No movies found matching "{{ searchTerm }}".
+        </div>
+        <p class="text-muted">Try different keywords or browse our featured movies.</p>
+        <button class="btn btn-primary" (click)="clearSearch()">
+          <i class="fas fa-home me-2"></i>Browse Featured Movies
+        </button>
+      </div>
+    </div>
+
+    <!-- Featured Movies (when no search) -->
+    <div class="row" *ngIf="!searchTerm && !hasSearched">
+      <div class="col-12">
+        <h3 class="mb-3">
+          <i class="fas fa-star me-2"></i>
+          Featured Movies
+        </h3>
+      </div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="!searchTerm && !hasSearched">
+      <div class="col" *ngFor="let movie of featuredMovies">
+        <app-movie-card [movie]="movie"></app-movie-card>
+      </div>
+    </div>
+  </div>
+</div>

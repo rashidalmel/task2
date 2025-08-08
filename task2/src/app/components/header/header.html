@@ -1,0 +1,142 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/home">
+      <i class="fas fa-film me-2"></i>
+      MovieApp
+    </a>
+    
+    <!-- Navigation Links - Left beside logo -->
+    <ul class="navbar-nav me-auto" *ngIf="isLoggedIn">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/search" routerLinkActive="active">Search</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact</a>
+      </li>
+    </ul>
+
+    <!-- Navigation Links - Left beside logo (when not logged in) -->
+    <ul class="navbar-nav me-auto" *ngIf="!isLoggedIn">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/search" routerLinkActive="active">Search</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/about" routerLinkActive="active">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/contact" routerLinkActive="active">Contact</a>
+      </li>
+    </ul>
+    
+    <!-- Profile Dropdown (when logged in) - Always visible on mobile -->
+    <div class="navbar-nav d-lg-none" *ngIf="isLoggedIn">
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="profile-avatar me-2">
+            <i class="fas fa-user"></i>
+          </div>
+          <span>{{ currentUser?.firstName }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <!-- Personal Info Section -->
+          <li class="dropdown-header">
+            <div class="d-flex align-items-center">
+              <div class="profile-avatar me-3">
+                <i class="fas fa-user"></i>
+              </div>
+              <div>
+                <div class="fw-bold">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</div>
+                <small class="text-muted">{{ currentUser?.email }}</small>
+              </div>
+            </div>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item" routerLink="/personal-info">
+              <i class="fas fa-user me-2"></i>Personal Info
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#">
+              <i class="fas fa-cog me-2"></i>Settings
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <a class="dropdown-item text-danger" href="#" (click)="logout()">
+              <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Login/Register Buttons (when not logged in) -->
+      <div class="navbar-nav ms-auto" *ngIf="!isLoggedIn">
+        <a class="nav-link btn btn-primary btn-sm me-2" routerLink="/login" routerLinkActive="active">
+          <i class="fas fa-sign-in-alt me-1"></i>Login
+        </a>
+        <a class="nav-link btn-sm" routerLink="/register" routerLinkActive="active">
+          <i class="fas fa-user-plus me-1"></i>Register
+        </a>
+      </div>
+
+      <!-- Profile Dropdown (when logged in) - Desktop only -->
+      <div class="navbar-nav ms-auto d-none d-lg-block" *ngIf="isLoggedIn">
+        <div class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="profile-avatar me-2">
+              <i class="fas fa-user"></i>
+            </div>
+            <span>{{ currentUser?.firstName }}</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <!-- Personal Info Section -->
+            <li class="dropdown-header">
+              <div class="d-flex align-items-center">
+                <div class="profile-avatar me-3">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div>
+                  <div class="fw-bold">{{ currentUser?.firstName }} {{ currentUser?.lastName }}</div>
+                  <small class="text-muted">{{ currentUser?.email }}</small>
+                </div>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" routerLink="/personal-info">
+                <i class="fas fa-user me-2"></i>Personal Info
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="fas fa-cog me-2"></i>Settings
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="#" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

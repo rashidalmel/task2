@@ -1,0 +1,131 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <h2 class="mb-3">
+              <i class="fas fa-user-plus text-primary me-2"></i>Create Account
+            </h2>
+            <p class="text-muted">Join MovieApp and start your movie journey</p>
+          </div>
+
+          <!-- Error/Success Messages -->
+          <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+          </div>
+          <div *ngIf="successMessage" class="alert alert-success mb-3">
+            <i class="fas fa-check-circle me-2"></i>{{ successMessage }}
+          </div>
+
+          <!-- Registration Form -->
+          <form (ngSubmit)="onSubmit()">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input type="text" class="form-control" id="firstName" 
+                         [(ngModel)]="firstName" name="firstName"
+                         placeholder="Enter your first name" required>
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input type="text" class="form-control" id="lastName" 
+                         [(ngModel)]="lastName" name="lastName"
+                         placeholder="Enter your last name" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-envelope"></i>
+                </span>
+                <input type="email" class="form-control" id="email" 
+                       [(ngModel)]="email" name="email"
+                       placeholder="Enter your email" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-at"></i>
+                </span>
+                <input type="text" class="form-control" id="username" 
+                       [(ngModel)]="username" name="username"
+                       placeholder="Choose a username" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" class="form-control" id="password" 
+                       [(ngModel)]="password" name="password"
+                       placeholder="Create a password" required>
+                <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility()">
+                  <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" class="form-control" id="confirmPassword" 
+                       [(ngModel)]="confirmPassword" name="confirmPassword"
+                       placeholder="Confirm your password" required>
+                <button class="btn btn-outline-secondary" type="button" (click)="toggleConfirmPasswordVisibility()">
+                  <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="birthDate" class="form-label">Date of Birth</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-calendar"></i>
+                </span>
+                <input type="date" class="form-control" id="birthDate" 
+                       [(ngModel)]="birthDate" name="birthDate" 
+                       min="1900-01-01" max="2010-12-31" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-outline-primary w-100 mb-3">
+              <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+
+            <!-- Login Link -->
+            <div class="text-center">
+              <p class="mb-0">
+                Already have an account? 
+                <a routerLink="/login" class="text-decoration-none">Sign in here</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

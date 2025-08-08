@@ -1,0 +1,81 @@
+// Profile avatar styles
+.profile-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+// Dropdown styles
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  min-width: 250px;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &.text-danger:hover {
+    background-color: #f8d7da;
+  }
+}
+
+// Dropdown header styles
+.dropdown-header {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-radius: 8px 8px 0 0;
+
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+// Navbar nav alignment
+.navbar-nav {
+  align-items: center;
+}
+
+// Mobile profile dropdown positioning
+.navbar-nav.d-lg-none {
+  margin-left: auto;
+  margin-right: 1rem; // Add space between profile and hamburger menu
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    left: auto;
+    min-width: 200px;
+  }
+}
+
+// Desktop profile dropdown
+.navbar-nav.d-none.d-lg-block {
+  margin-left: auto;
+}
+
+.dropdown-menu-end {
+  right: 0;
+  left: auto;
+}

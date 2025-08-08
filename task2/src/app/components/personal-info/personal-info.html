@@ -1,0 +1,220 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-user me-2"></i>Personal Information
+          </h3>
+        </div>
+        <div class="card-body p-5">
+          <!-- Success/Error Messages -->
+          <div *ngIf="successMessage" class="alert alert-success mb-3">
+            <i class="fas fa-check-circle me-2"></i>{{ successMessage }}
+          </div>
+          <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMessage }}
+          </div>
+
+          <div class="row">
+            <!-- Profile Picture Section -->
+            <div class="col-md-4 text-center mb-4">
+              <div class="profile-picture-container">
+                <div class="profile-picture" [style.background-image]="profileImage ? 'url(' + profileImage + ')' : 'none'">
+                  <div class="profile-placeholder" *ngIf="!profileImage">
+                    <i class="fas fa-user"></i>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <label for="profileImage" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-camera me-2"></i>Upload Photo
+                  </label>
+                  <input type="file" id="profileImage" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+                </div>
+                <small class="text-muted d-block mt-2">Max 5MB, JPG, PNG</small>
+              </div>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="col-md-8">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Personal Details</h4>
+                <button class="btn btn-outline-primary btn-sm" (click)="toggleEdit()" *ngIf="!isEditing">
+                  <i class="fas fa-edit me-2"></i>Edit
+                </button>
+                <div *ngIf="isEditing">
+                  <button class="btn btn-success btn-sm me-2" (click)="saveChanges()">
+                    <i class="fas fa-save me-2"></i>Save
+                  </button>
+                  <button class="btn btn-secondary btn-sm" (click)="cancelEdit()">
+                    <i class="fas fa-times me-2"></i>Cancel
+                  </button>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">First Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" class="form-control" [(ngModel)]="firstName" [readonly]="!isEditing">
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Last Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-user"></i>
+                    </span>
+                    <input type="text" class="form-control" [(ngModel)]="lastName" [readonly]="!isEditing">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Email Address</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-envelope"></i>
+                    </span>
+                    <input type="email" class="form-control" [(ngModel)]="email" [readonly]="!isEditing">
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Username</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-at"></i>
+                    </span>
+                    <input type="text" class="form-control" [(ngModel)]="username" [readonly]="!isEditing">
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Date of Birth</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-calendar"></i>
+                  </span>
+                  <input type="date" class="form-control" [(ngModel)]="birthDate" [readonly]="!isEditing">
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Age</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-birthday-cake"></i>
+                  </span>
+                  <input type="text" class="form-control" [value]="getAge() + ' years old'" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Favorite Movie Genres Section -->
+          <div class="mt-4 pt-4 border-top">
+            <h5 class="mb-3">
+              <i class="fas fa-film me-2"></i>Favorite Movie Genres
+            </h5>
+            <div class="row g-3">
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('action')" [class.selected]="selectedGenres.includes('action')">
+                  <div class="genre-icon">
+                    <i class="fas fa-fire"></i>
+                  </div>
+                  <div class="genre-name">Action</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('drama')" [class.selected]="selectedGenres.includes('drama')">
+                  <div class="genre-icon">
+                    <i class="fas fa-theater-masks"></i>
+                  </div>
+                  <div class="genre-name">Drama</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('comedy')" [class.selected]="selectedGenres.includes('comedy')">
+                  <div class="genre-icon">
+                    <i class="fas fa-laugh"></i>
+                  </div>
+                  <div class="genre-name">Comedy</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('horror')" [class.selected]="selectedGenres.includes('horror')">
+                  <div class="genre-icon">
+                    <i class="fas fa-ghost"></i>
+                  </div>
+                  <div class="genre-name">Horror</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('sci-fi')" [class.selected]="selectedGenres.includes('sci-fi')">
+                  <div class="genre-icon">
+                    <i class="fas fa-rocket"></i>
+                  </div>
+                  <div class="genre-name">Science Fiction</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('romance')" [class.selected]="selectedGenres.includes('romance')">
+                  <div class="genre-icon">
+                    <i class="fas fa-heart"></i>
+                  </div>
+                  <div class="genre-name">Romance</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('thriller')" [class.selected]="selectedGenres.includes('thriller')">
+                  <div class="genre-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <div class="genre-name">Thriller</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-lg-4">
+                <div class="genre-card" (click)="toggleGenre('documentary')" [class.selected]="selectedGenres.includes('documentary')">
+                  <div class="genre-icon">
+                    <i class="fas fa-camera"></i>
+                  </div>
+                  <div class="genre-name">Documentary</div>
+                  <div class="genre-check">
+                    <i class="fas fa-check"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted mt-2 d-block">Click on genres you enjoy</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
