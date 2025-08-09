@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MovieCardComponent, Movie } from '../movie-card/movie-card';
 import { TmdbService, Movie as TmdbMovie } from '../../services/tmdb.service';
@@ -23,10 +23,21 @@ export class SearchComponent implements OnInit {
   // Featured movies from TMDB
   featuredMovies: Movie[] = [];
 
-  constructor(private tmdbService: TmdbService) {}
+  constructor(
+    private tmdbService: TmdbService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.loadFeaturedMovies();
+    // Check for query parameter from header search
+    this.route.queryParams.subscribe(params => {
+      if (params['q']) {
+        this.searchTerm = params['q'];
+        this.performSearch();
+      } else {
+        this.loadFeaturedMovies();
+      }
+    });
   }
 
   loadFeaturedMovies() {

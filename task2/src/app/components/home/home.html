@@ -63,19 +63,19 @@
     </div>
   </div>
 
-  <!-- Continue Watching Section (if logged in) -->
-  <div class="content-section continue-section" *ngIf="isLoggedIn && continueWatching.length > 0">
+  <!-- Top Rated Movies Section -->
+  <div class="content-section top-rated-section" *ngIf="topRatedMovies.length > 0">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">
-          <i class="fas fa-clock me-2 text-warning"></i>Continue Watching
+          <i class="fas fa-trophy me-2 text-warning"></i>Top Rated Movies
         </h2>
-        <p class="section-subtitle">Pick up where you left off</p>
+        <p class="section-subtitle">Highest rated movies of all time</p>
       </div>
       
       <div class="movie-row">
         <div class="movie-slider">
-          <div class="movie-item" *ngFor="let movie of continueWatching">
+          <div class="movie-item" *ngFor="let movie of topRatedMovies">
             <app-movie-card [movie]="movie"></app-movie-card>
           </div>
         </div>
@@ -83,40 +83,38 @@
     </div>
   </div>
 
-  <!-- Categories Section -->
-  <div class="content-section categories-section">
+  <!-- Popular Movies Section -->
+  <div class="content-section popular-section" *ngIf="popularMovies.length > 0">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">
-          <i class="fas fa-th-large me-2 text-info"></i>Browse by Category
+          <i class="fas fa-star me-2 text-info"></i>Popular Movies
         </h2>
-        <p class="section-subtitle">Find exactly what you're looking for</p>
+        <p class="section-subtitle">Most watched and loved by audiences</p>
       </div>
       
-      <div class="categories-grid">
-        <div class="category-card" *ngFor="let category of categories" (click)="navigateToCategory(category)">
-          <div class="category-icon">
-            <i [class]="category.icon"></i>
+      <div class="movie-row">
+        <div class="movie-slider">
+          <div class="movie-item" *ngFor="let movie of popularMovies">
+            <app-movie-card [movie]="movie"></app-movie-card>
           </div>
-          <h4 class="category-title">{{ category.name }}</h4>
-          <p class="category-count">{{ category.count }} movies</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Featured Movies Section -->
-  <div class="content-section featured-section" *ngIf="featuredMovies.length > 0">
+  <!-- Upcoming Movies Section -->
+  <div class="content-section upcoming-section" *ngIf="upcomingMovies.length > 0">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">
-          <i class="fas fa-star me-2 text-warning"></i>Featured Movies
+          <i class="fas fa-calendar-alt me-2 text-success"></i>Upcoming Movies
         </h2>
-        <p class="section-subtitle">Handpicked for you</p>
+        <p class="section-subtitle">Coming soon to theaters</p>
       </div>
       
       <div class="movie-grid">
-        <div class="movie-item" *ngFor="let movie of featuredMovies">
+        <div class="movie-item" *ngFor="let movie of upcomingMovies">
           <app-movie-card [movie]="movie"></app-movie-card>
         </div>
       </div>

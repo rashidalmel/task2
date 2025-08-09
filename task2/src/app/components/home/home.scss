@@ -1,7 +1,7 @@
 // Hero Section
 .hero-section {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: url('/movie-theater-2502213_1920.jpg') center center/cover no-repeat;
   min-height: 75vh;
   display: flex;
   align-items: center;
@@ -17,8 +17,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23fff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>');
-    opacity: 0.3;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 100%);
+    opacity: 1;
   }
 }
 
@@ -46,7 +46,7 @@
   line-height: 1.2;
   
   .text-gradient {
-    background: linear-gradient(45deg, #ff6b6b, #feca57);
+    background: linear-gradient(45deg, #00d4ff, #7c3aed);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -62,14 +62,35 @@
 
 .hero-buttons {
   .btn {
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    border-radius: 50px;
-    transition: all 0.3s ease;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
     
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    // Override global button styles for hero section
+    &.btn-primary {
+      background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+      border-color: #00d4ff;
+      box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+      
+      &:hover, &:focus {
+        background: linear-gradient(135deg, #00b8e6 0%, #6a2fd8 100%);
+        border-color: #00b8e6;
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+        transform: translateY(-3px);
+      }
+    }
+    
+    &.btn-outline-light {
+      border-width: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      
+      &:hover, &:focus {
+        background: rgba(255, 255, 255, 0.9);
+        color: #212529;
+        border-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        transform: translateY(-3px);
+      }
     }
   }
 }
@@ -310,13 +331,22 @@
       border-radius: 50px 0 0 50px;
       border: none;
       padding: 0.75rem 1.5rem;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
     }
     
-    .btn {
-      border-radius: 0 50px 50px 0;
-      padding: 0.75rem 2rem;
-      font-weight: 600;
-    }
+         .btn {
+       border-radius: 0 50px 50px 0;
+       background: linear-gradient(135deg, #d3b612 0%, #ffa500 100%);
+       border: 2px solid #ffd700;
+       
+      //  &:hover, &:focus {
+      //    background: linear-gradient(135deg, #ffed4e 0%, #ff8c00 100%);
+      //    border-color: #ffed4e;
+      //    transform: translateY(-2px);
+      //    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+      //  }
+     }
   }
 }
 

@@ -26,19 +26,12 @@ export class HomeComponent implements OnInit {
   
   // Movie collections
   trendingMovies: Movie[] = [];
-  continueWatching: Movie[] = [];
-  featuredMovies: Movie[] = [];
+  topRatedMovies: Movie[] = [];
+  upcomingMovies: Movie[] = [];
   allMovies: Movie[] = [];
   
-  // Categories
-  categories: Category[] = [
-    { id: 'action', name: 'Action', icon: 'fas fa-fire', count: 150 },
-    { id: 'drama', name: 'Drama', icon: 'fas fa-theater-masks', count: 200 },
-    { id: 'comedy', name: 'Comedy', icon: 'fas fa-laugh', count: 120 },
-    { id: 'horror', name: 'Horror', icon: 'fas fa-ghost', count: 80 },
-    { id: 'sci-fi', name: 'Sci-Fi', icon: 'fas fa-rocket', count: 60 },
-    { id: 'romance', name: 'Romance', icon: 'fas fa-heart', count: 90 }
-  ];
+  // Popular movies collection
+  popularMovies: Movie[] = [];
 
   constructor(
     private authService: AuthService,
@@ -68,40 +61,38 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    // Load popular movies for featured section
+    // Load popular movies for popular section
     this.tmdbService.getPopularMovies().subscribe({
       next: (response) => {
-        this.featuredMovies = this.convertTmdbToMovie(response.results);
-        this.allMovies = [...this.allMovies, ...this.featuredMovies];
+        this.popularMovies = this.convertTmdbToMovie(response.results);
+        this.allMovies = [...this.allMovies, ...this.popularMovies];
       },
       error: (error) => {
         console.error('Error loading popular movies:', error);
       }
     });
 
-    // Continue watching (if logged in) - using dummy data for now
-    if (this.isLoggedIn) {
-      this.continueWatching = [
-        {
-          id: 5,
-          title: 'Fight Club',
-          description: 'An insomniac office worker and a devil-may-care soapmaker form an underground fight club that evolves into something much, much more.',
-          year: 1999,
-          rating: 8.8,
-          posterUrl: 'https://via.placeholder.com/300x450/ffc107/000000?text=Fight+Club',
-          genre: 'Drama'
-        },
-        {
-          id: 6,
-          title: 'Goodfellas',
-          description: 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.',
-          year: 1990,
-          rating: 8.7,
-          posterUrl: 'https://via.placeholder.com/300x450/fd7e14/ffffff?text=Goodfellas',
-          genre: 'Biography, Crime, Drama'
-        }
-      ];
-    }
+    // Load upcoming movies from TMDB
+    this.tmdbService.getUpcomingMovies().subscribe({
+      next: (response) => {
+        this.upcomingMovies = this.convertTmdbToMovie(response.results);
+        this.allMovies = [...this.allMovies, ...this.upcomingMovies];
+      },
+      error: (error) => {
+        console.error('Error loading upcoming movies:', error);
+      }
+    });
+
+    // Load top rated movies from TMDB
+    this.tmdbService.getTopRatedMovies().subscribe({
+      next: (response) => {
+        this.topRatedMovies = this.convertTmdbToMovie(response.results);
+        this.allMovies = [...this.allMovies, ...this.topRatedMovies];
+      },
+      error: (error) => {
+        console.error('Error loading top rated movies:', error);
+      }
+    });
   }
 
   // Convert TMDB movie format to our Movie interface
@@ -140,7 +131,7 @@ export class HomeComponent implements OnInit {
       }
     ];
     this.trendingMovies = this.allMovies;
-    this.featuredMovies = this.allMovies;
+    this.upcomingMovies = this.allMovies;
   }
 
   filterByCategory(category: string) {
@@ -153,17 +144,17 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  navigateToCategory(category: Category) {
-    // Navigate to search page with category filter
+  navigateToPopular() {
+    // Navigate to search page with popular filter
     this.router.navigate(['/search']);
   }
 
   loadMoreMovies() {
-    // Load more popular movies
-    this.tmdbService.getPopularMovies(2).subscribe({
+    // Load more upcoming movies
+    this.tmdbService.getUpcomingMovies(2).subscribe({
       next: (response) => {
         const newMovies = this.convertTmdbToMovie(response.results);
-        this.featuredMovies.push(...newMovies);
+        this.upcomingMovies.push(...newMovies);
         this.allMovies.push(...newMovies);
       },
       error: (error) => {

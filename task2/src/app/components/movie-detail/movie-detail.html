@@ -1,64 +1,188 @@
-<div class="container mt-4">
-  <div class="row" *ngIf="movie">
-    <div class="col-md-4">
-      <img [src]="movie.posterUrl || 'https://via.placeholder.com/400x600?text=No+Image'" 
-           class="img-fluid rounded shadow" 
-           [alt]="movie.title">
+<!-- Loading Section -->
+<div class="loading-section" *ngIf="isLoading">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <h4 class="mt-3">Loading Movie Details...</h4>
+        <p class="text-muted">Fetching the latest information from TMDB</p>
+      </div>
     </div>
-    <div class="col-md-8">
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a routerLink="/home">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ movie.title }}</li>
-        </ol>
-      </nav>
-      
-      <h1 class="display-5 mb-3">{{ movie.title }}</h1>
-      
-      <div class="mb-3">
-        <span class="badge bg-warning text-dark me-2">
-          <i class="fas fa-star me-1"></i>{{ movie.rating }}/10
-        </span>
-        <span class="badge bg-info me-2">{{ movie.year }}</span>
-        <span class="badge bg-secondary">{{ movie.genre || 'Drama' }}</span>
-      </div>
-      
-      <p class="lead mb-4">{{ movie.description }}</p>
-      
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <h5>Cast</h5>
-          <p class="text-muted">{{ movie.cast || 'Information not available' }}</p>
+  </div>
+</div>
+
+<!-- Error Section -->
+<div class="error-section" *ngIf="error && !isLoading">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          {{ error }}
         </div>
-        <div class="col-md-6">
-          <h5>Director</h5>
-          <p class="text-muted">{{ movie.director || 'Information not available' }}</p>
-        </div>
-      </div>
-      
-      <div class="d-flex gap-2">
-        <button class="btn btn-primary btn-lg">
-          <i class="fas fa-play me-2"></i>Watch Now
-        </button>
-        <button class="btn btn-outline-secondary btn-lg">
-          <i class="fas fa-heart me-2"></i>Add to Favorites
-        </button>
-        <button class="btn btn-outline-info btn-lg">
-          <i class="fas fa-share me-2"></i>Share
+        <button class="btn btn-primary" (click)="goBack()">
+          <i class="fas fa-home me-2"></i>Back to Home
         </button>
       </div>
     </div>
   </div>
-  
-  <div class="row mt-5" *ngIf="!movie">
-    <div class="col-12 text-center">
-      <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle me-2"></i>
-        Movie not found. Please check the URL and try again.
+</div>
+
+<!-- Movie Details Section -->
+<div class="movie-detail-section" *ngIf="movie && !isLoading">
+  <!-- Hero Section with Backdrop -->
+  <div class="hero-backdrop" 
+       [style.background-image]="'url(' + getCustomBackgroundUrl() + ')'">
+    <div class="backdrop-overlay">
+      <div class="container">
+        <div class="row align-items-center min-vh-50">
+          <div class="col-lg-6">
+            <div class="hero-content">
+              <h1 class="hero-title">{{ movie.title }}</h1>
+              <p class="hero-tagline" *ngIf="movie.tagline">{{ movie.tagline }}</p>
+              <div class="hero-buttons">
+                <button class="btn btn-primary btn-lg me-3">
+                  <i class="fas fa-play me-2"></i>Watch Trailer
+                </button>
+                <button class="btn btn-outline-light btn-lg">
+                  <i class="fas fa-heart me-2"></i>Add to Favorites
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <a routerLink="/home" class="btn btn-primary">
-        <i class="fas fa-home me-2"></i>Back to Home
-      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/home">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ movie.title }}</li>
+      </ol>
+    </nav>
+
+    <div class="row">
+      <!-- Poster Column -->
+      <div class="col-md-4">
+        <div class="poster-container">
+          <img [src]="getPosterUrl(movie.poster_path)" 
+               class="img-fluid rounded shadow-lg" 
+               [alt]="movie.title">
+        </div>
+      </div>
+
+      <!-- Details Column -->
+      <div class="col-md-8">
+        <div class="movie-info">
+          <h1 class="movie-title">{{ movie.title }}</h1>
+          
+          <!-- Rating and Basic Info -->
+          <div class="movie-meta mb-3">
+            <span class="badge bg-warning text-dark me-2">
+              <i class="fas fa-star me-1"></i>{{ movie.vote_average.toFixed(1) }}/10
+            </span>
+                         <span class="badge bg-info me-2">{{ getReleaseYear(movie.release_date) }}</span>
+            <span class="badge bg-secondary me-2" *ngIf="movie.runtime">{{ formatRuntime(movie.runtime) }}</span>
+            <span class="badge bg-success me-2" *ngIf="movie.status">{{ movie.status }}</span>
+          </div>
+
+          <!-- Genres -->
+          <div class="genres mb-3" *ngIf="movie.genres">
+            <span class="badge bg-outline-secondary me-1" *ngFor="let genre of movie.genres">
+              {{ genre.name }}
+            </span>
+          </div>
+
+          <!-- Overview -->
+          <div class="overview mb-4">
+            <h5>Overview</h5>
+            <p class="lead">{{ movie.overview || 'No overview available.' }}</p>
+          </div>
+
+          <!-- Additional Details -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h6><i class="fas fa-user me-2"></i>Director</h6>
+              <p class="text-muted">{{ getDirector() }}</p>
+            </div>
+            <div class="col-md-6">
+              <h6><i class="fas fa-calendar me-2"></i>Release Date</h6>
+                             <p class="text-muted">{{ formatReleaseDate(movie.release_date) }}</p>
+            </div>
+          </div>
+
+          <!-- Financial Info -->
+          <div class="financial-info mb-4" *ngIf="movie.budget > 0 || movie.revenue > 0">
+            <h6><i class="fas fa-dollar-sign me-2"></i>Financial Information</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <small class="text-muted">Budget</small>
+                <p class="mb-1">{{ formatCurrency(movie.budget) }}</p>
+              </div>
+              <div class="col-md-6">
+                <small class="text-muted">Revenue</small>
+                <p class="mb-1">{{ formatCurrency(movie.revenue) }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn btn-primary btn-lg me-3">
+              <i class="fas fa-play me-2"></i>Watch Now
+            </button>
+            <button class="btn btn-outline-secondary btn-lg me-3">
+              <i class="fas fa-heart me-2"></i>Add to Favorites
+            </button>
+            <button class="btn btn-outline-info btn-lg">
+              <i class="fas fa-share me-2"></i>Share
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trailer Section -->
+    <div class="trailer-section mt-5" *ngIf="getTrailerUrl()">
+      <h3 class="section-title">
+        <i class="fas fa-play-circle me-2"></i>Official Trailer
+      </h3>
+      <div class="trailer-container">
+        <div class="ratio ratio-16x9">
+          <iframe [src]="getTrailerUrl()" 
+                  title="Movie Trailer" 
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cast Section -->
+    <div class="cast-section mt-5" *ngIf="getTopCast().length > 0">
+      <h3 class="section-title">
+        <i class="fas fa-users me-2"></i>Top Cast
+      </h3>
+      <div class="cast-grid">
+        <div class="cast-member" *ngFor="let member of getTopCast()">
+          <div class="cast-avatar">
+            <img [src]="member.profile_path ? getPosterUrl(member.profile_path) : 'https://via.placeholder.com/185x278?text=No+Image'" 
+                 [alt]="member.name"
+                 class="img-fluid rounded">
+          </div>
+          <div class="cast-info">
+            <h6 class="cast-name">{{ member.name }}</h6>
+            <p class="cast-character">{{ member.character }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
