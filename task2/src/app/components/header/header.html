@@ -55,6 +55,12 @@
               <button type="button" class="clear-btn" (click)="clearSearch()" *ngIf="searchTerm">
                 <i class="fas fa-times"></i>
               </button>
+              <!-- Loading indicator -->
+              <div class="search-loading" *ngIf="isSearching">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Searching...</span>
+                </div>
+              </div>
             </form>
             
             <!-- Search Results Dropdown -->
@@ -79,7 +85,7 @@
                   </div>
                 </div>
                 <div class="view-all-results">
-                  <a routerLink="/search" [queryParams]="{q: searchTerm}">View all results</a>
+                  <a routerLink="/search" [queryParams]="{q: searchTerm}" (click)="navigateToSearch()">View all results</a>
                 </div>
               </div>
             </div>
@@ -157,7 +163,8 @@
                 <img [src]="getPosterUrl(movie.poster_path)" 
                      [alt]="movie.title" 
                      class="movie-poster"
-                     *ngIf="movie.poster_path">
+                     *ngIf="movie.poster_path"
+                     (error)="$event.target.style.display='none'">
                 <div class="movie-info">
                   <div class="movie-title">{{ movie.title }}</div>
                   <div class="movie-year" *ngIf="movie.release_date">
@@ -170,7 +177,7 @@
                 </div>
               </div>
               <div class="view-all-results">
-                <a routerLink="/search" [queryParams]="{q: searchTerm}">View all results</a>
+                <a routerLink="/search" [queryParams]="{q: searchTerm}" (click)="navigateToSearch()">View all results</a>
               </div>
             </div>
           </div>
@@ -196,6 +203,12 @@
               <button type="button" class="clear-btn" (click)="clearSearch()" *ngIf="searchTerm">
                 <i class="fas fa-times"></i>
               </button>
+              <!-- Loading indicator -->
+              <div class="search-loading" *ngIf="isSearching">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Searching...</span>
+                </div>
+              </div>
             </form>
             
             <!-- Search Results Dropdown -->
@@ -207,7 +220,8 @@
                   <img [src]="getPosterUrl(movie.poster_path)" 
                        [alt]="movie.title" 
                        class="movie-poster"
-                       *ngIf="movie.poster_path">
+                       *ngIf="movie.poster_path"
+                       (error)="$event.target.style.display='none'">
                   <div class="movie-info">
                     <div class="movie-title">{{ movie.title }}</div>
                     <div class="movie-year" *ngIf="movie.release_date">
@@ -220,7 +234,7 @@
                   </div>
                 </div>
                 <div class="view-all-results">
-                  <a routerLink="/search" [queryParams]="{q: searchTerm}">View all results</a>
+                  <a routerLink="/search" [queryParams]="{q: searchTerm}" (click)="navigateToSearch()">View all results</a>
                 </div>
               </div>
             </div>

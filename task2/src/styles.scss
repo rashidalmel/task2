@@ -34,7 +34,6 @@ body {
 .navbar {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
-  position: relative;
   z-index: 1030; // Higher z-index to appear above hero
   
   .container {

@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HeaderComponent } from './header';  // تغيير من Header إلى HeaderComponent
 
-import { Header } from './header';
-
-describe('Header', () => {
-  let component: Header;
-  let fixture: ComponentFixture<Header>;
+describe('HeaderComponent', () => {  // تغيير من Header إلى HeaderComponent
+  let component: HeaderComponent;  // تغيير من Header إلى HeaderComponent
+  let fixture: ComponentFixture<HeaderComponent>;  // تغيير من Header إلى HeaderComponent
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Header]
+      imports: [HeaderComponent]  // تغيير من Header إلى HeaderComponent
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Header);
+    fixture = TestBed.createComponent(HeaderComponent);  // تغيير من Header إلى HeaderComponent
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

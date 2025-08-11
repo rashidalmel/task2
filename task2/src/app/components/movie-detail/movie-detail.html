@@ -8,6 +8,29 @@
         </div>
         <h4 class="mt-3">Loading Movie Details...</h4>
         <p class="text-muted">Fetching the latest information from TMDB</p>
+        
+        <!-- Progressive Loading Indicators -->
+        <div class="loading-progress mt-4">
+          <div class="progress-item" [class.completed]="!isLoadingDetails">
+            <i class="fas" [class.fa-spinner]="isLoadingDetails" [class.fa-check]="!isLoadingDetails"></i>
+            <span class="ms-2">Movie Details</span>
+          </div>
+          <div class="progress-item" [class.completed]="!isLoadingCredits">
+            <i class="fas" [class.fa-spinner]="isLoadingCredits" [class.fa-check]="!isLoadingCredits"></i>
+            <span class="ms-2">Cast & Crew</span>
+          </div>
+          <div class="progress-item" [class.completed]="!isLoadingVideos">
+            <i class="fas" [class.fa-spinner]="isLoadingVideos" [class.fa-check]="!isLoadingVideos"></i>
+            <span class="ms-2">Trailers & Videos</span>
+          </div>
+        </div>
+        
+        <div class="loading-tips mt-4">
+          <small class="text-muted">
+            <i class="fas fa-lightbulb me-1"></i>
+            Tip: This usually takes 2-5 seconds depending on your connection
+          </small>
+        </div>
       </div>
     </div>
   </div>
@@ -25,6 +48,26 @@
         <button class="btn btn-primary" (click)="goBack()">
           <i class="fas fa-home me-2"></i>Back to Home
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Skeleton Loading Section -->
+<div class="skeleton-loading" *ngIf="isLoadingDetails && !isLoading">
+  <div class="container">
+    <div class="row">
+      <!-- Poster Skeleton -->
+      <div class="col-md-4">
+        <div class="skeleton-poster"></div>
+      </div>
+      <!-- Content Skeleton -->
+      <div class="col-md-8">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-meta"></div>
+        <div class="skeleton-overview"></div>
+        <div class="skeleton-overview short"></div>
+        <div class="skeleton-buttons"></div>
       </div>
     </div>
   </div>
@@ -73,7 +116,8 @@
         <div class="poster-container">
           <img [src]="getPosterUrl(movie.poster_path)" 
                class="img-fluid rounded shadow-lg" 
-               [alt]="movie.title">
+               [alt]="movie.title"
+               (error)="$event.target.src = getCastProfileUrl(null)">
         </div>
       </div>
 
@@ -173,9 +217,10 @@
       <div class="cast-grid">
         <div class="cast-member" *ngFor="let member of getTopCast()">
           <div class="cast-avatar">
-            <img [src]="member.profile_path ? getPosterUrl(member.profile_path) : 'https://via.placeholder.com/185x278?text=No+Image'" 
+            <img [src]="getCastProfileUrl(member.profile_path)" 
                  [alt]="member.name"
-                 class="img-fluid rounded">
+                 class="img-fluid rounded"
+                 (error)="$event.target.src = getCastProfileUrl(null)">
           </div>
           <div class="cast-info">
             <h6 class="cast-name">{{ member.name }}</h6>

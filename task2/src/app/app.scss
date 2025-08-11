@@ -4,7 +4,7 @@ body {
 }
 
 main {
-  min-height: calc(100vh - 80px); // Account for header only
+  min-height: calc(100vh - 120px); // Account for sticky header height
 }
 
 // Card hover effects
@@ -24,12 +24,6 @@ main {
   &:hover {
     color: #fff !important;
   }
-}
-
-// Custom button styles
-.btn {
-  border-radius: 8px;
-  font-weight: 500;
 }
 
 // Hero section gradient

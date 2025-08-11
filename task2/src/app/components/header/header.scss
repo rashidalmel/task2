@@ -22,6 +22,24 @@
   min-width: 200px;
 }
 
+.animated-search-container {
+  position: relative;
+  
+  form {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-loading {
+    position: absolute;
+    right: 50px; // Position it before the clear button
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+}
+
 .search-input {
   border-radius: 25px 0 0 25px;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -268,4 +286,11 @@
       color: white;
     }
   }
+}
+
+// Make navbar sticky
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
 }

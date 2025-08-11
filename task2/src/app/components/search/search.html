@@ -89,7 +89,17 @@
       </div>
     </div>
     
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="searchResults.length > 0">
+    <!-- Loading state for search results -->
+    <div class="row" *ngIf="isSearching && hasSearched">
+      <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Searching...</span>
+        </div>
+        <p class="mt-2 text-muted">Searching for "{{ searchTerm }}"...</p>
+      </div>
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="searchResults.length > 0 && !isSearching">
       <div class="col" *ngFor="let movie of searchResults">
         <app-movie-card [movie]="movie"></app-movie-card>
       </div>

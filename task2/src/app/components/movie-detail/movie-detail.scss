@@ -330,6 +330,138 @@
   .text-muted {
     color: #6c757d !important;
   }
+  
+  // Progressive Loading Styles
+  .loading-progress {
+    max-width: 400px;
+    margin: 0 auto;
+    
+    .progress-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background-color: #f8f9fa;
+      border-radius: 0.5rem;
+      border-left: 4px solid #dee2e6;
+      transition: all 0.3s ease;
+      
+      &.completed {
+        background-color: #d4edda;
+        border-left-color: #28a745;
+        color: #155724;
+        
+        i {
+          color: #28a745;
+        }
+      }
+      
+      i {
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+        
+        &.fa-spinner {
+          color: #007bff;
+          animation: spin 1s linear infinite;
+        }
+        
+        &.fa-check {
+          color: #28a745;
+        }
+      }
+      
+      span {
+        font-weight: 500;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+  
+  .loading-tips {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 2rem;
+    
+    small {
+      color: #856404 !important;
+      font-weight: 500;
+    }
+  }
+}
+
+// Spinner animation
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Skeleton Loading Styles
+.skeleton-loading {
+  padding: 2rem 0;
+  
+  .skeleton-poster {
+    width: 100%;
+    max-width: 400px;
+    height: 600px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.5rem;
+    margin: 0 auto;
+  }
+  
+  .skeleton-title {
+    width: 80%;
+    height: 3rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .skeleton-meta {
+    width: 60%;
+    height: 2rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .skeleton-overview {
+    width: 100%;
+    height: 1.5rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    
+    &.short {
+      width: 70%;
+    }
+  }
+  
+  .skeleton-buttons {
+    width: 50%;
+    height: 3rem;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+    margin-top: 2rem;
+  }
+}
+
+// Skeleton loading animation
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .error-section {

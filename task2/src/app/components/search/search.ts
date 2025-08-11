@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MovieCardComponent, Movie } from '../movie-card/movie-card';
 import { TmdbService, Movie as TmdbMovie } from '../../services/tmdb.service';
+import { Subscription, Subject } from 'rxjs';
+import { takeUntil, catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -12,7 +15,7 @@ import { TmdbService, Movie as TmdbMovie } from '../../services/tmdb.service';
   templateUrl: './search.html',
   styleUrl: './search.scss'
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
   searchTerm: string = '';
   selectedGenre: string = 'all';
   hasSearched: boolean = false;
@@ -22,6 +25,9 @@ export class SearchComponent implements OnInit {
   
   // Featured movies from TMDB
   featuredMovies: Movie[] = [];
+  
+  private destroy$ = new Subject<void>();
+  private currentSearchRequest: Subscription | null = null;
 
   constructor(
     private tmdbService: TmdbService,
@@ -40,27 +46,39 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.currentSearchRequest) {
+      this.currentSearchRequest.unsubscribe();
+    }
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   loadFeaturedMovies() {
     this.isLoading = true;
     
     // Load trending movies as featured content
-    this.tmdbService.getTrendingMovies().subscribe({
+    this.tmdbService.getTrendingMovies().pipe(
+      takeUntil(this.destroy$),
+      catchError(error => {
+        console.error('Error loading featured movies:', error);
+        return of([]);
+      }),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
       next: (tmdbMovies: TmdbMovie[]) => {
         this.featuredMovies = this.convertTmdbToMovie(tmdbMovies);
         this.searchResults = this.featuredMovies;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading featured movies:', error);
-        this.loadDummyMovies();
-        this.isLoading = false;
       }
     });
   }
 
   // Convert TMDB movie format to our Movie interface
   convertTmdbToMovie(tmdbMovies: TmdbMovie[]): Movie[] {
-    return tmdbMovies.map(tmdbMovie => ({
+    console.log('Converting TMDB movies:', tmdbMovies); // Debug log
+    const converted = tmdbMovies.map(tmdbMovie => ({
       id: tmdbMovie.id,
       title: tmdbMovie.title,
       description: tmdbMovie.overview,
@@ -69,6 +87,8 @@ export class SearchComponent implements OnInit {
       posterUrl: this.tmdbService.getPosterUrl(tmdbMovie.poster_path, 'w500'),
       genre: 'Action, Drama' // You can get genres from TMDB if needed
     }));
+    console.log('Converted movies:', converted); // Debug log
+    return converted;
   }
 
   // Fallback to dummy data if API fails
@@ -80,7 +100,7 @@ export class SearchComponent implements OnInit {
         description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
         year: 1994,
         rating: 9.3,
-        posterUrl: 'https://via.placeholder.com/300x450/007bff/ffffff?text=Shawshank',
+        posterUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMDA3QkZGIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjI1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2hhd3NoYW5rPC90ZXh0Pgo8L3N2Zz4=',
         genre: 'Drama'
       },
       {
@@ -89,7 +109,7 @@ export class SearchComponent implements OnInit {
         description: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
         year: 1972,
         rating: 9.2,
-        posterUrl: 'https://via.placeholder.com/300x450/28a745/ffffff?text=Godfather',
+        posterUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMjhBNzQ1Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjI1IiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+R29kZmF0aGVyPC90ZXh0Pgo8L3N2Zz4=',
         genre: 'Crime, Drama'
       }
     ];
@@ -107,11 +127,11 @@ export class SearchComponent implements OnInit {
     this.hasSearched = true;
     this.isSearching = true;
     
-    // Simulate slight delay for better UX (like Netflix)
+    // Reduced delay for better responsiveness
     setTimeout(() => {
       this.performSearch();
       this.isSearching = false;
-    }, 300);
+    }, 150); // Reduced from 300ms to 150ms
   }
 
   performSearch() {
@@ -121,19 +141,35 @@ export class SearchComponent implements OnInit {
       return;
     }
 
+    // Cancel any ongoing search request
+    if (this.currentSearchRequest) {
+      this.currentSearchRequest.unsubscribe();
+    }
+
     this.isSearching = true;
     this.hasSearched = true;
+    console.log('Performing search for:', this.searchTerm); // Debug log
 
     // Use TMDB API to search for movies
-    this.tmdbService.searchMovies(this.searchTerm).subscribe({
-      next: (response) => {
-        this.searchResults = this.convertTmdbToMovie(response.results);
-        this.isSearching = false;
-      },
-      error: (error) => {
+    this.currentSearchRequest = this.tmdbService.searchMovies(this.searchTerm).pipe(
+      takeUntil(this.destroy$),
+      catchError(error => {
         console.error('Error searching movies:', error);
-        this.searchResults = [];
+        return of(null);
+      }),
+      finalize(() => {
         this.isSearching = false;
+      })
+    ).subscribe({
+      next: (response) => {
+        console.log('Search response:', response); // Debug log
+        if (response && response.results) {
+          this.searchResults = this.convertTmdbToMovie(response.results);
+          console.log('Final search results:', this.searchResults); // Debug log
+        } else {
+          this.searchResults = [];
+          console.log('No search results found'); // Debug log
+        }
       }
     });
   }
@@ -143,6 +179,10 @@ export class SearchComponent implements OnInit {
     
     if (this.searchTerm.trim()) {
       // If there's a search term, perform search with genre filter
+      // Cancel any ongoing request first
+      if (this.currentSearchRequest) {
+        this.currentSearchRequest.unsubscribe();
+      }
       this.performSearch();
     } else {
       // If no search term, show featured movies filtered by genre
@@ -161,5 +201,11 @@ export class SearchComponent implements OnInit {
     this.selectedGenre = 'all';
     this.hasSearched = false;
     this.searchResults = this.featuredMovies;
+    
+    // Cancel any ongoing search request
+    if (this.currentSearchRequest) {
+      this.currentSearchRequest.unsubscribe();
+      this.currentSearchRequest = null;
+    }
   }
 }
