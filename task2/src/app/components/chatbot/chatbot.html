@@ -1,0 +1,106 @@
+<div class="chatbot-container">
+  <!-- Chat Toggle Button -->
+  <button class="chat-toggle-btn" (click)="toggleChat()" [class.open]="isOpen">
+    <i class="pi pi-comments"></i>
+    <span class="chat-toggle-text">{{ isOpen ? 'Close Chat' : 'Chat with AI' }}</span>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" [class.open]="isOpen">
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <h3>Gemini AI Assistant</h3>
+      <div class="chat-actions">
+        <button class="status-btn" (click)="showStatus()" title="Show status" *ngIf="!isGeminiReady">
+          <i class="pi pi-info-circle"></i>
+        </button>
+        <button class="test-btn" (click)="testConnection()" title="Test connection" *ngIf="!isGeminiReady">
+          <i class="pi pi-wifi"></i>
+        </button>
+        <button class="clear-btn" (click)="clearChat()" title="Clear chat">
+          <i class="pi pi-trash"></i>
+        </button>
+        <button class="close-btn" (click)="toggleChat()" title="Close chat">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="chat-messages" #chatContainer>
+      <div *ngIf="messages.length === 0" class="welcome-message">
+        <div class="welcome-icon">
+          <i class="pi pi-robot"></i>
+        </div>
+        <h4>🎬 Movie App AI Assistant</h4>
+        <p>I'm here to help you discover movies, get recommendations, and make the most of your entertainment experience!</p>
+        <div class="welcome-features">
+          <div class="feature">
+            <i class="pi pi-search"></i>
+            <span>Movie Search & Discovery</span>
+          </div>
+          <div class="feature">
+            <i class="pi pi-star"></i>
+            <span>Personalized Recommendations</span>
+          </div>
+          <div class="feature">
+            <i class="pi pi-info-circle"></i>
+            <span>App Navigation Help</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngFor="let message of messages" 
+           class="message" 
+           [class.user-message]="message.role === 'user'"
+           [class.assistant-message]="message.role === 'assistant'">
+        <div class="message-content">
+          <div class="message-text">{{ message.content }}</div>
+          <div class="message-time">
+            {{ message.timestamp | date:'shortTime' }}
+          </div>
+        </div>
+        <div class="message-avatar">
+          <i *ngIf="message.role === 'user'" class="pi pi-user"></i>
+          <i *ngIf="message.role === 'assistant'" class="pi pi-robot"></i>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="isLoading" class="message assistant-message">
+        <div class="message-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div class="message-avatar">
+          <i class="pi pi-robot"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input">
+      <form (ngSubmit)="sendMessage()" class="input-form">
+        <input 
+          type="text" 
+          [(ngModel)]="newMessage" 
+          name="newMessage"
+          placeholder="Type your message here..."
+          [disabled]="isLoading"
+          (keyup.enter)="sendMessage()"
+          class="message-input"
+        >
+        <button 
+          type="submit" 
+          [disabled]="!newMessage.trim() || isLoading"
+          class="send-btn"
+        >
+          <i class="pi pi-send"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

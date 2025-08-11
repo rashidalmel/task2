@@ -2,9 +2,12 @@
   <!-- Loading State -->
   <div class="row" *ngIf="isLoading">
     <div class="col-12 text-center">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+      <p-progressSpinner 
+        [style]="{width: '3rem', height: '3rem'}" 
+        strokeWidth="4"
+        fill="var(--surface-ground)" 
+        animationDuration=".5s">
+      </p-progressSpinner>
       <p class="mt-2 text-muted">Loading movies...</p>
     </div>
   </div>
@@ -24,7 +27,7 @@
       <div class="col-md-8 mx-auto">
         <div class="input-group input-group-lg position-relative">
           <span class="input-group-text">
-            <i class="fas fa-search"></i>
+            <i class="pi pi-search"></i>
           </span>
           <input type="text" 
                  class="form-control" 
@@ -33,89 +36,306 @@
                  (input)="onSearchInput()"
                  (keyup.enter)="performSearch()">
           <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()" *ngIf="searchTerm">
-            <i class="fas fa-times"></i>
+            <i class="pi pi-times"></i>
           </button>
         </div>
         <!-- Loading indicator -->
         <div class="text-center mt-2" *ngIf="isSearching">
-          <div class="spinner-border spinner-border-sm text-primary" role="status">
-            <span class="visually-hidden">Searching...</span>
-          </div>
+          <p-progressSpinner 
+            [style]="{width: '1rem', height: '1rem'}" 
+            strokeWidth="3"
+            fill="var(--surface-ground)" 
+            animationDuration=".5s">
+          </p-progressSpinner>
           <small class="text-muted ms-2">Searching...</small>
         </div>
       </div>
     </div>
 
-    <!-- Search Filters -->
+    <!-- Advanced Filters -->
     <div class="row mb-4">
-      <div class="col-md-8 mx-auto">
-        <div class="d-flex flex-wrap gap-2 justify-content-center">
-          <button class="btn btn-outline-secondary btn-sm" 
-                  [class.active]="selectedGenre === 'all'"
-                  (click)="filterByGenre('all')">
-            All Genres
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  [class.active]="selectedGenre === 'drama'"
-                  (click)="filterByGenre('drama')">
-            Drama
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  [class.active]="selectedGenre === 'action'"
-                  (click)="filterByGenre('action')">
-            Action
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  [class.active]="selectedGenre === 'comedy'"
-                  (click)="filterByGenre('comedy')">
-            Comedy
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" 
-                  [class.active]="selectedGenre === 'crime'"
-                  (click)="filterByGenre('crime')">
-            Crime
-          </button>
-        </div>
+      <div class="col-12">
+        <p-card styleClass="filter-card">
+          <ng-template pTemplate="header">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="pi pi-filter me-2"></i>
+                Advanced Filters
+              </h5>
+              <p-button 
+                icon="pi pi-refresh" 
+                severity="secondary" 
+                size="small"
+                (onClick)="clearFilters()"
+                label="Clear All">
+              </p-button>
+            </div>
+          </ng-template>
+          
+          <div class="row g-3">
+            <!-- Genre Filter -->
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label fw-bold">Genres</label>
+              <p-multiSelect
+                [options]="availableGenres"
+                [(ngModel)]="selectedGenres"
+                optionLabel="name"
+                placeholder="Select genres..."
+                [showClear]="true"
+                (onChange)="onGenreChange()"
+                styleClass="w-100">
+              </p-multiSelect>
+            </div>
+
+                         <!-- Year Filter -->
+             <div class="col-md-6 col-lg-3">
+               <label class="form-label fw-bold">Release Year</label>
+               <p-select
+                 [options]="yearOptions"
+                 [(ngModel)]="selectedYear"
+                 optionLabel="label"
+                 optionValue="value"
+                 placeholder="Select year..."
+                 (onChange)="onYearChange()"
+                 styleClass="w-100">
+               </p-select>
+             </div>
+
+                         <!-- Rating Filter -->
+             <div class="col-md-6 col-lg-3">
+               <label class="form-label fw-bold">Rating</label>
+               <p-select
+                 [options]="ratingOptions"
+                 [(ngModel)]="selectedRating"
+                 optionLabel="label"
+                 optionValue="value"
+                 placeholder="Select rating..."
+                 (onChange)="onRatingChange()"
+                 styleClass="w-100">
+               </p-select>
+             </div>
+
+            <!-- Sort Options -->
+            <div class="col-md-6 col-lg-3">
+              <label class="form-label fw-bold">Sort By</label>
+              <p-select
+                [options]="sortOptions"
+                [(ngModel)]="sortBy"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Sort by..."
+                (onChange)="onSortChange()"
+                styleClass="w-100">
+              </p-select>
+            </div>
+          </div>
+
+          <!-- Quick Genre Buttons (Legacy) -->
+          <div class="mt-3">
+            <p-divider></p-divider>
+            <label class="form-label fw-bold mb-2">Quick Filters</label>
+            <div class="d-flex flex-wrap gap-2">
+              <p-button 
+                [outlined]="selectedGenre !== 'all'"
+                [severity]="selectedGenre === 'all' ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="filterByGenre('all')"
+                label="All Genres">
+              </p-button>
+              <p-button 
+                [outlined]="selectedGenre !== 'drama'"
+                [severity]="selectedGenre === 'drama' ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="filterByGenre('drama')"
+                label="Drama">
+              </p-button>
+              <p-button 
+                [outlined]="selectedGenre !== 'action'"
+                [severity]="selectedGenre === 'action' ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="filterByGenre('action')"
+                label="Action">
+              </p-button>
+              <p-button 
+                [outlined]="selectedGenre !== 'comedy'"
+                [severity]="selectedGenre === 'comedy' ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="filterByGenre('comedy')"
+                label="Comedy">
+              </p-button>
+              <p-button 
+                [outlined]="selectedGenre !== 'crime'"
+                [severity]="selectedGenre === 'crime' ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="filterByGenre('crime')"
+                label="Crime">
+              </p-button>
+            </div>
+          </div>
+        </p-card>
       </div>
     </div>
 
-    <!-- Search Results -->
-    <div class="row" *ngIf="searchResults.length > 0 && (hasSearched || searchTerm)">
+    <!-- Search Results Header -->
+    <div class="row mb-3" *ngIf="searchResults.length > 0">
       <div class="col-12">
-        <h3 class="mb-3">
-          <i class="fas fa-search me-2"></i>
-          Search Results ({{ searchResults.length }} found)
-        </h3>
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">
+            <i class="pi pi-search me-2" *ngIf="hasSearched"></i>
+            <i class="pi pi-star me-2" *ngIf="!hasSearched"></i>
+            {{ hasSearched ? 'Search Results' : 'All Movies' }} ({{ totalResultsCount }} found)
+          </h3>
+          <div class="text-muted small">
+            <span *ngIf="filteredResults.length !== searchResults.length">
+              Showing {{ filteredResults.length }} of {{ searchResults.length }} results
+            </span>
+            <span *ngIf="filteredResults.length === searchResults.length">
+              Showing {{ paginatedResults.length }} of {{ totalResultsCount }} movies (Page {{ currentPage }} of {{ totalPages }})
+            </span>
+          </div>
+        </div>
       </div>
     </div>
     
     <!-- Loading state for search results -->
     <div class="row" *ngIf="isSearching && hasSearched">
       <div class="col-12 text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Searching...</span>
-        </div>
+        <p-progressSpinner 
+          [style]="{width: '3rem', height: '3rem'}" 
+          strokeWidth="4"
+          fill="var(--surface-ground)" 
+          animationDuration=".5s">
+        </p-progressSpinner>
         <p class="mt-2 text-muted">Searching for "{{ searchTerm }}"...</p>
       </div>
     </div>
     
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="searchResults.length > 0 && !isSearching">
-      <div class="col" *ngFor="let movie of searchResults">
+    <!-- Movies Grid (All movies with pagination) -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="paginatedResults.length > 0">
+      <div class="col" *ngFor="let movie of paginatedResults">
         <app-movie-card [movie]="movie"></app-movie-card>
       </div>
     </div>
 
-    <!-- No Results -->
+    <!-- Pagination Controls -->
+    <div class="row mt-4" *ngIf="totalPages > 1">
+      <div class="col-12">
+        <div class="d-flex justify-content-center align-items-center gap-2">
+          <!-- Previous Page Button -->
+          <p-button 
+            icon="pi pi-chevron-left" 
+            severity="secondary" 
+            size="small"
+            [disabled]="currentPage === 1"
+            (onClick)="previousPage()"
+            [outlined]="true">
+          </p-button>
+
+          <!-- Page Numbers -->
+          <div class="d-flex gap-1">
+            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+              <p-button 
+                [label]="(i + 1).toString()"
+                [severity]="currentPage === (i + 1) ? 'primary' : 'secondary'"
+                size="small"
+                (onClick)="goToPage(i + 1)"
+                [outlined]="currentPage !== (i + 1)"
+                styleClass="px-3">
+              </p-button>
+            </ng-container>
+          </div>
+
+          <!-- Next Page Button -->
+          <p-button 
+            icon="pi pi-chevron-right" 
+            severity="secondary" 
+            size="small"
+            [disabled]="currentPage === totalPages"
+            (onClick)="nextPage()"
+            [outlined]="true">
+          </p-button>
+        </div>
+
+        <!-- Load More Button (Alternative to pagination) -->
+        <div class="text-center mt-3" *ngIf="hasMorePages">
+          <p-button 
+            icon="pi pi-plus" 
+            severity="primary"
+            [loading]="isLoadingMore"
+            (onClick)="loadMoreMovies()"
+            label="Load More Movies">
+          </p-button>
+        </div>
+
+        <!-- Page Info -->
+        <div class="text-center mt-2">
+          <small class="text-muted">
+            Page {{ currentPage }} of {{ totalPages }} • 
+            Showing {{ paginatedResults.length }} of {{ totalResultsCount }} movies
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results After Filtering -->
+    <div class="row mt-5" *ngIf="hasSearched && searchResults.length > 0 && displayResults.length === 0 && !isSearching">
+      <div class="col-12 text-center">
+        <div class="alert alert-warning">
+          <i class="pi pi-exclamation-triangle me-2"></i>
+          No movies match your current filters.
+        </div>
+        <p class="text-muted">Try adjusting your filter criteria or clear all filters.</p>
+        <p-button 
+          icon="pi pi-refresh" 
+          severity="secondary"
+          (onClick)="clearFilters()"
+          label="Clear Filters">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- No Search Results -->
     <div class="row mt-5" *ngIf="hasSearched && searchResults.length === 0 && !isSearching">
       <div class="col-12 text-center">
         <div class="alert alert-info">
-          <i class="fas fa-search me-2"></i>
+          <i class="pi pi-search me-2"></i>
           No movies found matching "{{ searchTerm }}".
         </div>
         <p class="text-muted">Try different keywords or browse our featured movies.</p>
-        <button class="btn btn-primary" (click)="clearSearch()">
-          <i class="fas fa-home me-2"></i>Browse Featured Movies
-        </button>
+        <p-button 
+          icon="pi pi-home" 
+          severity="primary"
+          (onClick)="clearSearch()"
+          label="Browse Featured Movies">
+        </p-button>
+      </div>
+    </div>
+
+    <!-- Debug Info (remove in production) -->
+    <div class="row mt-4" *ngIf="hasSearched">
+      <div class="col-12">
+        <div class="alert alert-info">
+          <strong>Debug Info:</strong><br>
+          Search Term: "{{ searchTerm }}"<br>
+          Has Searched: {{ hasSearched }}<br>
+          Is Searching: {{ isSearching }}<br>
+          Total Results: {{ searchResults.length }}<br>
+          Filtered Results: {{ filteredResults.length }}<br>
+          Featured Movies Count: {{ featuredMovies.length }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Raw Results Debug (remove in production) -->
+    <div class="row mt-4" *ngIf="hasSearched && displayResults.length > 0">
+      <div class="col-12">
+        <div class="alert alert-success">
+          <strong>Display Results ({{ displayResults.length }}):</strong><br>
+          <div *ngFor="let movie of displayResults.slice(0, 3)">
+            • {{ movie.title }} ({{ movie.year }}) - Rating: {{ movie.rating }} - Genre: {{ movie.genre }}
+          </div>
+          <div *ngIf="displayResults.length > 3">... and {{ displayResults.length - 3 }} more</div>
+        </div>
       </div>
     </div>
 
@@ -123,14 +343,14 @@
     <div class="row" *ngIf="!searchTerm && !hasSearched">
       <div class="col-12">
         <h3 class="mb-3">
-          <i class="fas fa-star me-2"></i>
+          <i class="pi pi-star me-2"></i>
           Featured Movies
         </h3>
       </div>
     </div>
     
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" *ngIf="!searchTerm && !hasSearched">
-      <div class="col" *ngFor="let movie of featuredMovies">
+      <div class="col" *ngFor="let movie of paginatedResults">
         <app-movie-card [movie]="movie"></app-movie-card>
       </div>
     </div>

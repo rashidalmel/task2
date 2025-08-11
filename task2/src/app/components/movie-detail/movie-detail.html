@@ -3,31 +3,34 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-          <span class="visually-hidden">Loading...</span>
-        </div>
+        <p-progressSpinner 
+          [style]="{width: '4rem', height: '4rem'}" 
+          strokeWidth="4"
+          fill="var(--surface-ground)" 
+          animationDuration=".5s">
+        </p-progressSpinner>
         <h4 class="mt-3">Loading Movie Details...</h4>
         <p class="text-muted">Fetching the latest information from TMDB</p>
         
         <!-- Progressive Loading Indicators -->
         <div class="loading-progress mt-4">
           <div class="progress-item" [class.completed]="!isLoadingDetails">
-            <i class="fas" [class.fa-spinner]="isLoadingDetails" [class.fa-check]="!isLoadingDetails"></i>
+            <i class="pi" [class.pi-spinner]="isLoadingDetails" [class.pi-check]="!isLoadingDetails"></i>
             <span class="ms-2">Movie Details</span>
           </div>
           <div class="progress-item" [class.completed]="!isLoadingCredits">
-            <i class="fas" [class.fa-spinner]="isLoadingCredits" [class.fa-check]="!isLoadingCredits"></i>
+            <i class="pi" [class.pi-spinner]="isLoadingCredits" [class.pi-check]="!isLoadingCredits"></i>
             <span class="ms-2">Cast & Crew</span>
           </div>
           <div class="progress-item" [class.completed]="!isLoadingVideos">
-            <i class="fas" [class.fa-spinner]="isLoadingVideos" [class.fa-check]="!isLoadingVideos"></i>
+            <i class="pi" [class.pi-spinner]="isLoadingVideos" [class.pi-check]="!isLoadingVideos"></i>
             <span class="ms-2">Trailers & Videos</span>
           </div>
         </div>
         
         <div class="loading-tips mt-4">
           <small class="text-muted">
-            <i class="fas fa-lightbulb me-1"></i>
+            <i class="pi pi-lightbulb me-1"></i>
             Tip: This usually takes 2-5 seconds depending on your connection
           </small>
         </div>

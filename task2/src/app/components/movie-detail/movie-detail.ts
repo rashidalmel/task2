@@ -3,12 +3,15 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TmdbService, MovieDetails } from '../../services/tmdb.service';
+import { ToastService } from '../../services/toast.service';
 import { forkJoin, catchError, of, Subject, takeUntil } from 'rxjs';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 @Component({
   selector: 'app-movie-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ProgressSpinnerModule, ProgressBarModule],
   templateUrl: './movie-detail.html',
   styleUrl: './movie-detail.scss'
 })
@@ -28,7 +31,8 @@ export class MovieDetailComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private tmdbService: TmdbService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -79,6 +83,7 @@ export class MovieDetailComponent implements OnInit, OnDestroy {
       details: this.tmdbService.getMovieDetails(movieId).pipe(
         catchError(error => {
           console.error('Error loading movie details:', error);
+          this.toastService.showError('Failed to load movie details. Please try again later.', 'Loading Error');
           this.error = 'Failed to load movie details';
           return of(null);
         })
@@ -86,12 +91,14 @@ export class MovieDetailComponent implements OnInit, OnDestroy {
       credits: this.tmdbService.getMovieCredits(movieId).pipe(
         catchError(error => {
           console.error('Error loading movie credits:', error);
+          this.toastService.showWarning('Failed to load movie credits. Some information may be missing.', 'Partial Data');
           return of(null);
         })
       ),
       videos: this.tmdbService.getMovieVideos(movieId).pipe(
         catchError(error => {
           console.error('Error loading movie videos:', error);
+          this.toastService.showWarning('Failed to load movie videos. Trailers may not be available.', 'Partial Data');
           return of(null);
         })
       )

@@ -134,15 +134,27 @@ export class TmdbService {
   searchMovies(query: string, page: number = 1): Observable<MovieResponse> {
     const url = `${this.baseUrl}/search/movie`;
     console.log('TMDB Service - Searching movies with query:', query); // Debug log
+    console.log('TMDB Service - Full URL:', url); // Debug log
+    console.log('TMDB Service - API Key length:', this.apiKey ? this.apiKey.length : 'undefined'); // Debug log
+    
+    const params = new HttpParams()
+      .set('query', query)
+      .set('page', page.toString());
+    
+    console.log('TMDB Service - Search params:', params.toString()); // Debug log
+    
     return this.http.get<MovieResponse>(url, { 
       headers: this.getHeaders(),
-      params: new HttpParams()
-        .set('query', query)
-        .set('page', page.toString())
+      params: params
     }).pipe(
       timeout(5000), // Reduced timeout to 5 seconds for better UX
       catchError(error => {
-        console.error('Timeout or error searching movies:', error);
+        console.error('TMDB Service - Search error:', error);
+        console.error('TMDB Service - Error details:', {
+          status: error.status,
+          message: error.message,
+          url: error.url
+        });
         return of(null as any);
       })
     );

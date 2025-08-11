@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { MovieCardComponent, Movie } from '../movie-card/movie-card';
 import { AuthService } from '../../services/auth.service';
 import { TmdbService, Movie as TmdbMovie } from '../../services/tmdb.service';
+import { ToastService } from '../../services/toast.service';
 import { forkJoin, catchError, of } from 'rxjs';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 interface Category {
   id: string;
@@ -17,7 +19,7 @@ interface Category {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, MovieCardComponent],
+  imports: [CommonModule, RouterModule, FormsModule, MovieCardComponent, ProgressSpinnerModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
@@ -37,7 +39,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private tmdbService: TmdbService
+    private tmdbService: TmdbService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -53,24 +56,28 @@ export class HomeComponent implements OnInit {
       trending: this.tmdbService.getTrendingMovies().pipe(
         catchError(error => {
           console.error('Error loading trending movies:', error);
+          this.toastService.showError('Failed to load trending movies. Please try again later.', 'Loading Error');
           return of([]);
         })
       ),
       popular: this.tmdbService.getPopularMovies().pipe(
         catchError(error => {
           console.error('Error loading popular movies:', error);
+          this.toastService.showError('Failed to load popular movies. Please try again later.', 'Loading Error');
           return of({ results: [] });
         })
       ),
       upcoming: this.tmdbService.getUpcomingMovies().pipe(
         catchError(error => {
           console.error('Error loading upcoming movies:', error);
+          this.toastService.showError('Failed to load upcoming movies. Please try again later.', 'Loading Error');
           return of({ results: [] });
         })
       ),
       topRated: this.tmdbService.getTopRatedMovies().pipe(
         catchError(error => {
           console.error('Error loading top rated movies:', error);
+          this.toastService.showError('Failed to load top rated movies. Please try again later.', 'Loading Error');
           return of({ results: [] });
         })
       )
@@ -103,12 +110,14 @@ export class HomeComponent implements OnInit {
         // If no movies loaded, fallback to dummy data
         if (this.allMovies.length === 0) {
           this.loadDummyMovies();
+          this.toastService.showWarning('Using sample data. Some movies may not be available.', 'Limited Data');
         }
         
         this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading movies:', error);
+        this.toastService.showError('Failed to load movies. Please check your connection and try again.', 'Connection Error');
         this.loadDummyMovies();
         this.isLoading = false;
       }
@@ -176,9 +185,11 @@ export class HomeComponent implements OnInit {
         const newMovies = this.convertTmdbToMovie(response.results);
         this.upcomingMovies.push(...newMovies);
         this.allMovies.push(...newMovies);
+        this.toastService.showSuccess(`Loaded ${newMovies.length} more movies!`, 'Movies Updated');
       },
       error: (error) => {
         console.error('Error loading more movies:', error);
+        this.toastService.showError('Failed to load more movies. Please try again later.', 'Loading Error');
       }
     });
   }

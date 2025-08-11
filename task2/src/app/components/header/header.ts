@@ -7,13 +7,14 @@ import { TmdbService, Movie as TmdbMovie } from '../../services/tmdb.service';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil, catchError, finalize } from 'rxjs/operators';
 import { Subject, of } from 'rxjs';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, ProgressSpinnerModule],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
@@ -216,14 +217,18 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   navigateToSearch() {
-    // Ensure search term is properly set before navigation
-    if (this.searchTerm && this.searchTerm.trim()) {
-      this.router.navigate(['/search'], { queryParams: { q: this.searchTerm.trim() } });
-      // Hide search results after navigation
-      this.showSearchResults = false;
-    } else {
-      // If no search term, just navigate to search page
-      this.router.navigate(['/search']);
+    this.showSearchResults = false;
+    this.router.navigate(['/search'], { queryParams: { q: this.searchTerm } });
+  }
+
+  // Close mobile navigation menu
+  closeMobileMenu() {
+    const navbarCollapse = document.getElementById('navbarNav');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+        toggle: false
+      });
+      bsCollapse.hide();
     }
   }
 

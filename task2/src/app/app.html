@@ -3,3 +3,14 @@
   <router-outlet></router-outlet>
 </main>
 <app-footer></app-footer>
+<app-chatbot></app-chatbot>
+
+<!-- Global Toast Notifications -->
+<p-toast 
+  position="top-right" 
+  [baseZIndex]="1000"
+  [showTransitionOptions]="'300ms'"
+  [hideTransitionOptions]="'250ms'"
+  [showTransformOptions]="'translateX(100%)'"
+  [hideTransformOptions]="'translateX(100%)'">
+</p-toast>
