@@ -1,0 +1,77 @@
+// Contact button styling - matching Start Watching button gradient
+.btn-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%) !important;
+  border-color: #00d4ff !important;
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover, &:focus, &:active {
+    background: linear-gradient(135deg, #00b8e6 0%, #6a2fd8 100%) !important;
+    border-color: #00b8e6 !important;
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+    transform: translateY(-3px);
+    color: white !important;
+  }
+}
+
+// Statistics section styling with beautiful gradients
+.stats-section {
+  .bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+  }
+  
+  .bg-success {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+    }
+  }
+  
+  .bg-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+    box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(250, 112, 154, 0.4);
+    }
+  }
+  
+  .bg-info {
+    background: linear-gradient(135deg, #92e3df 0%, #e3b2c2 100%) !important;
+    box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(168, 237, 234, 0.4);
+    }
+  }
+  
+  // Statistics numbers styling
+  h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    font-size: 1rem;
+    font-weight: 500;
+    opacity: 0.95;
+  }
+}

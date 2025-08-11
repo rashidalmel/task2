@@ -12,7 +12,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #d3b612  0%, #ffa500  100%);
   color: white;
   border: none;
   border-radius: 50px;
@@ -28,7 +28,7 @@
   }
   
   &.open {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #ffa500  0%, #d3b612  100%);
   }
   
   .chat-toggle-text {
@@ -70,7 +70,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffa500  0%, #d3b612  100%);
   color: white;
   
   h3 {
@@ -364,8 +364,8 @@
 // Responsive Design
 @media (max-width: 480px) {
   .chatbot-container {
-    bottom: 10px;
-    right: 10px;
+    bottom: 25px;  // Increased from 10px for better mobile spacing
+    right: 20px;   // Increased from 10px for better mobile spacing
   }
   
   .chat-window {

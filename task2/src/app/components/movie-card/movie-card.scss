@@ -83,6 +83,23 @@
   }
 }
 
+// Watch button styling - matching Start Watching button gradient
+.btn-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%) !important;
+  border-color: #00d4ff !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover, &:focus, &:active {
+    background: linear-gradient(135deg, #00b8e6 0%, #6a2fd8 100%) !important;
+    border-color: #00b8e6 !important;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.5);
+    transform: translateY(-2px);
+    color: white !important;
+  }
+}
+
 .card-body {
   padding: 1rem;
   

@@ -202,3 +202,20 @@ getSelectedGenres(): string {
   return this.selectedGenres.join(', ');
 }
 */
+
+// Sign Up button styling to match Start Watching button
+.btn-outline-primary {
+  background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+  border-color: #00d4ff;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover, &:focus {
+    background: linear-gradient(135deg, #00b8e6 0%, #6a2fd8 100%);
+    border-color: #00b8e6;
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+    transform: translateY(-3px);
+    color: white;
+  }
+}
