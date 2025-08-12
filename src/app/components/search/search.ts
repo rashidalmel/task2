@@ -196,9 +196,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     
     // Load multiple pages of trending movies to get more content initially
-    const page1$ = this.tmdbService.getTrendingMovies('week', 1);
-    const page2$ = this.tmdbService.getTrendingMovies('week', 2);
-    const page3$ = this.tmdbService.getTrendingMovies('week', 3);
+    const page1$ = this.tmdbService.getTrendingMoviesFiltered('week', 1);
+    const page2$ = this.tmdbService.getTrendingMoviesFiltered('week', 2);
+    const page3$ = this.tmdbService.getTrendingMoviesFiltered('week', 3);
     
     // Combine all three pages
     page1$.pipe(
@@ -337,7 +337,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     console.log('Current Results Count:', this.searchResults.length);
 
     // Use TMDB API to search for movies
-    this.currentSearchRequest = this.tmdbService.searchMovies(this.searchTerm).pipe(
+    this.currentSearchRequest = this.tmdbService.searchMoviesFiltered(this.searchTerm).pipe(
       takeUntil(this.destroy$),
       catchError(error => {
         console.error('Error searching movies:', error);
@@ -616,7 +616,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       // Calculate next page to load
       const nextPage = Math.floor(this.featuredMovies.length / 20) + 1;
       
-      this.tmdbService.getTrendingMovies('week', nextPage).pipe(
+      this.tmdbService.getTrendingMoviesFiltered('week', nextPage).pipe(
         takeUntil(this.destroy$),
         catchError(error => {
           console.error('Error loading more movies from API:', error);

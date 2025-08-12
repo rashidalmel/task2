@@ -53,28 +53,28 @@ export class HomeComponent implements OnInit {
     
     // Load all movie collections in parallel using forkJoin for better performance
     forkJoin({
-      trending: this.tmdbService.getTrendingMovies().pipe(
+      trending: this.tmdbService.getTrendingMoviesFiltered().pipe(
         catchError(error => {
           console.error('Error loading trending movies:', error);
           this.toastService.showError('Failed to load trending movies. Please try again later.', 'Loading Error');
           return of([]);
         })
       ),
-      popular: this.tmdbService.getPopularMovies().pipe(
+      popular: this.tmdbService.getPopularMoviesFiltered().pipe(
         catchError(error => {
           console.error('Error loading popular movies:', error);
           this.toastService.showError('Failed to load popular movies. Please try again later.', 'Loading Error');
           return of({ results: [] });
         })
       ),
-      upcoming: this.tmdbService.getUpcomingMovies().pipe(
+      upcoming: this.tmdbService.getUpcomingMoviesFiltered().pipe(
         catchError(error => {
           console.error('Error loading upcoming movies:', error);
           this.toastService.showError('Failed to load upcoming movies. Please try again later.', 'Loading Error');
           return of({ results: [] });
         })
       ),
-      topRated: this.tmdbService.getTopRatedMovies().pipe(
+      topRated: this.tmdbService.getTopRatedMoviesFiltered().pipe(
         catchError(error => {
           console.error('Error loading top rated movies:', error);
           this.toastService.showError('Failed to load top rated movies. Please try again later.', 'Loading Error');

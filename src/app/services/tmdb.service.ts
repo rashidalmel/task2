@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, timeout, catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { of } from 'rxjs';
+import { AuthService } from './auth.service';
+import { ToastService } from './toast.service';
 
 export interface Movie {
   id: number;
@@ -53,8 +55,13 @@ export class TmdbService {
   private readonly baseUrl = environment.tmdbBaseUrl;
   private readonly apiKey = environment.tmdbApiKey;
   private readonly imageBaseUrl = environment.tmdbImageBaseUrl;
+  private hasShownFilterNotification = false; // Track notification to avoid spam
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient, 
+    private authService: AuthService,
+    private toastService: ToastService
+  ) {}
 
   // Get trending movies
   getTrendingMovies(timeWindow: 'day' | 'week' = 'week', page: number = 1): Observable<Movie[]> {
@@ -264,6 +271,301 @@ export class TmdbService {
           return of(null as any);
         })
       );
+  }
+
+  // Helper method to calculate user age
+  private getUserAge(): number {
+    const user = this.authService.getCurrentUser();
+    if (!user || !user.birthDate) {
+      return 18; // Default to adult age if no user or birth date
+    }
+
+    const today = new Date();
+    const birthDate = new Date(user.birthDate);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  }
+
+  // Helper method to filter movies based on user age
+  private filterMoviesByAge(movies: Movie[]): Movie[] {
+    const userAge = this.getUserAge();
+    
+    // If user is 18 or older, return all movies
+    if (userAge >= 18) {
+      return movies;
+    }
+    
+    // Define restricted genres for different age groups
+    const restrictedGenresUnder13 = [27, 53, 80]; // Horror, Thriller, Crime
+    const restrictedGenresUnder16 = [27]; // Horror only
+    
+    // Enhanced mature keywords - more comprehensive
+    const matureKeywords = [
+      'kill', 'murder', 'death', 'blood', 'violent', 'war', 'revenge', 
+      'assassin', 'mafia', 'drug', 'gangster', 'serial', 'torture',
+      'massacre', 'slaughter', 'brutal', 'savage', 'deadly'
+    ];
+
+    // Specific adult content keywords that should be filtered for under 18
+    const adultContentKeywords = [
+      'adult', 'mature', 'erotic', 'xxx', 'sex', 'porn', 'nude', 'naked',
+      'explicit', 'sexual', 'seduction', 'lust', 'passion', 'desire',
+      'intimate', 'sensual', '18+', 'adults only', 'not for children',
+      'rated r', 'unrated', 'director\'s cut'
+    ];
+    
+    // If user is under 18, apply comprehensive filtering
+    const filteredMovies = movies.filter(movie => {
+      // Filter out explicit adult content
+      if (movie.adult) {
+        console.log(`Movie: ${movie.title} - FILTERED: Adult content flag`);
+        return false;
+      }
+      
+      // Age-specific genre filtering
+      if (userAge < 13 && movie.genre_ids.some(id => restrictedGenresUnder13.includes(id))) {
+        console.log(`Movie: ${movie.title} - FILTERED: Restricted genre for under 13`);
+        return false;
+      }
+      
+      if (userAge < 16 && movie.genre_ids.some(id => restrictedGenresUnder16.includes(id))) {
+        console.log(`Movie: ${movie.title} - FILTERED: Horror genre for under 16`);
+        return false;
+      }
+      
+      // Content-based filtering using title and overview
+      const titleLower = movie.title.toLowerCase();
+      const overviewLower = (movie.overview || '').toLowerCase();
+      
+      // Check for specific adult content keywords (stricter for under 18)
+      const hasAdultContent = adultContentKeywords.some(keyword => 
+        titleLower.includes(keyword) || overviewLower.includes(keyword)
+      );
+      
+      if (hasAdultContent) {
+        console.log(`Movie: ${movie.title} - FILTERED: Contains adult content keywords`);
+        return false;
+      }
+      
+      // Check for general mature content
+      const hasMatureContent = matureKeywords.some(keyword => 
+        titleLower.includes(keyword) || overviewLower.includes(keyword)
+      );
+      
+      if (hasMatureContent) {
+        console.log(`Movie: ${movie.title} - FILTERED: Contains mature content keywords`);
+        return false;
+      }
+      
+      // Rating-based filtering (low-rated movies often have mature content)
+      if (userAge < 16 && movie.vote_average > 0 && movie.vote_average < 4.0) {
+        console.log(`Movie: ${movie.title} - FILTERED: Low rating (${movie.vote_average}) potentially inappropriate`);
+        return false;
+      }
+      
+      // Popularity-based filtering for very young users (unpopular movies might be niche/mature)
+      if (userAge < 13 && movie.popularity < 5.0) {
+        console.log(`Movie: ${movie.title} - FILTERED: Low popularity for very young users`);
+        return false;
+      }
+      
+      console.log(`Movie: ${movie.title} - ALLOWED: Passed all age filters`);
+      return true;
+    });
+    
+    // Show filtering summary for users under 18
+    if (userAge < 18 && movies.length - filteredMovies.length > 0) {
+      const filteredCount = movies.length - filteredMovies.length;
+      console.log(`🔒 Content Protection: ${filteredCount} movies filtered for age-appropriate viewing (Age: ${userAge})`);
+      
+      // Show user-friendly notification (only once per session to avoid spam)
+      if (!this.hasShownFilterNotification) {
+        this.toastService.showInfo(
+          `${filteredCount} movies hidden for age-appropriate viewing.`,
+          'Content Protection Active'
+        );
+        this.hasShownFilterNotification = true;
+      }
+    }
+    
+    return filteredMovies;
+  }
+
+  // Get family-friendly movie recommendations based on age
+  getFamilyFriendlyMovies(userAge: number, page: number = 1): Observable<MovieResponse> {
+    let genreIds: number[] = [];
+    
+    if (userAge < 10) {
+      // Very young: Animation, Family, Adventure
+      genreIds = [16, 10751, 12];
+    } else if (userAge < 13) {
+      // Tweens: Animation, Family, Adventure, Comedy, Fantasy
+      genreIds = [16, 10751, 12, 35, 14];
+    } else if (userAge < 16) {
+      // Teens: Adventure, Comedy, Fantasy, Science Fiction, Romance
+      genreIds = [12, 35, 14, 878, 10749];
+    } else {
+      // 16-17: Most genres except Horror and Crime
+      genreIds = [28, 12, 35, 18, 14, 36, 10402, 10749, 878, 10770];
+    }
+    
+    const genreQuery = genreIds.join(',');
+    const url = `${this.baseUrl}/discover/movie`;
+    
+    return this.http.get<MovieResponse>(url, {
+      headers: this.getHeaders(),
+      params: new HttpParams()
+        .set('with_genres', genreQuery)
+        .set('page', page.toString())
+        .set('vote_average.gte', '6.0') // Only well-rated movies
+        .set('sort_by', 'popularity.desc')
+    }).pipe(
+      timeout(10000),
+      catchError(error => {
+        console.error('Error getting family-friendly movies:', error);
+        return of({ 
+          results: [], 
+          page: 1, 
+          total_pages: 0, 
+          total_results: 0 
+        } as MovieResponse);
+      })
+    );
+  }
+
+  // Enhanced movie fetching methods with age filtering
+  getTrendingMoviesFiltered(timeWindow: 'day' | 'week' = 'week', page: number = 1): Observable<Movie[]> {
+    return this.getTrendingMovies(timeWindow, page).pipe(
+      map(movies => this.filterMoviesByAge(movies))
+    );
+  }
+
+  getPopularMoviesFiltered(page: number = 1): Observable<MovieResponse> {
+    return this.getPopularMovies(page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  getTopRatedMoviesFiltered(page: number = 1): Observable<MovieResponse> {
+    return this.getTopRatedMovies(page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  getNowPlayingMoviesFiltered(page: number = 1): Observable<MovieResponse> {
+    return this.getNowPlayingMovies(page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  getUpcomingMoviesFiltered(page: number = 1): Observable<MovieResponse> {
+    return this.getUpcomingMovies(page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  searchMoviesFiltered(query: string, page: number = 1): Observable<MovieResponse> {
+    return this.searchMovies(query, page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  getMoviesByGenreFiltered(genreId: number, page: number = 1): Observable<MovieResponse> {
+    return this.getMoviesByGenre(genreId, page).pipe(
+      map(response => {
+        if (response && response.results) {
+          return {
+            ...response,
+            results: this.filterMoviesByAge(response.results)
+          };
+        }
+        return response;
+      })
+    );
+  }
+
+  // Get movie certifications/ratings
+  getMovieCertifications(movieId: number): Observable<any> {
+    const url = `${this.baseUrl}/movie/${movieId}/release_dates`;
+    return this.http.get<any>(url, { headers: this.getHeaders() }).pipe(
+      timeout(5000),
+      catchError(error => {
+        console.error('Error getting movie certifications:', error);
+        return of(null);
+      })
+    );
+  }
+
+  // Enhanced filtering with certification data
+  private async isMovieAppropriateForAge(movie: Movie, userAge: number): Promise<boolean> {
+    // Basic filtering first
+    if (movie.adult) return false;
+    
+    // For users 16+, we can be less restrictive but still check certifications
+    if (userAge >= 16) {
+      try {
+        const certifications = await this.getMovieCertifications(movie.id).toPromise();
+        if (certifications && certifications.results) {
+          const usCert = certifications.results.find((r: any) => r.iso_3166_1 === 'US');
+          if (usCert && usCert.release_dates) {
+            const rating = usCert.release_dates[0]?.certification;
+            if (rating && ['NC-17', 'X'].includes(rating)) {
+              return false;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not get certification data, using basic filtering');
+      }
+    }
+    
+    return true;
   }
 
   // Helper method to get API parameters
